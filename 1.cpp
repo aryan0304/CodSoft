@@ -1,69 +1,62 @@
 #include <iostream>
 #include <fstream>
-#include<string>
-#include <cstdlib>
+#include <string>
 
 using namespace std;
-int ID;
 
-struct todo {
+struct Todo {
     int id;
     string task;
 };
 
+int ID = 0;
 
-void addtodo() {
+void addTodo() {
     system("cls");
-    cout<<"\t\t\t***********************************************************************"<<endl;
-	cout<<"\t\t\t                       WELCOME TO Your ToDo List                       "<<endl;
-    cout<<"\t\t\t***********************************************************************"<<endl<<endl<<endl;
-    todo todo;
+    cout << "\t\t\t***********************************************************************" << endl;
+    cout << "\t\t\t                       WELCOME TO Your ToDo List                       " << endl;
+    cout << "\t\t\t***********************************************************************" << endl << endl << endl;
+
+    Todo todo;
     cout << "\n\tEnter new task: ";
-    cin.get();
-    getline(cin, todo.task); 
+    cin.ignore();
+    getline(cin, todo.task);
     ID++;
 
-
-    ofstream write;
-    write.open("todo.txt", ios::app);
-    write << "\n" << ID;
-    write << "\n" << todo.task ;
+    ofstream write("todo.txt", ios::app);
+    write << "\n" << ID << "\n" << todo.task;
     write.close();
 
-
-    write.open("id.txt");
-    write << ID;
-    write.close();
+    ofstream idWrite("id.txt");
+    idWrite << ID;
+    idWrite.close();
 
     char ch;
-    cout<<"Do you want to add more task? y/n"<<endl;
-    cin>> ch;
+    cout << "Do you want to add more tasks? (y/n): ";
+    cin >> ch;
 
-
-    if(ch == 'y'){
-        addtodo();
+    if (ch == 'y') {
+        addTodo();
     }
-    else{
+    else {
         cout << "\n\tTask has been added successfully";
-        return;
     }
 }
 
-
-void print(todo s) {
-    cout << "\n\tID is : " << s.id;
-    cout << "\n\tTask is : " << s.task;
+void print(const Todo& s) {
+    cout << "\n\tID is: " << s.id;
+    cout << "\n\tTask is: " << s.task;
 }
-
 
 void readData() {
     system("cls");
-     cout<<"\t\t\t***********************************************************************"<<endl;
-	cout<<"\t\t\t                       WELCOME TO Your ToDo List                       "<<endl;
-    cout<<"\t\t\t***********************************************************************"<<endl<<endl<<endl;
-    todo todo;
-    ifstream read;
-    read.open("todo.txt");
+    cout << "\t\t\t***********************************************************************" << endl;
+    cout << "\t\t\t                       WELCOME TO Your ToDo List                       " << endl;
+    cout << "\t\t\t***********************************************************************" << endl << endl << endl;
+
+    Todo todo;
+    ifstream read("todo.txt");
+
     cout << "\n\t------------------Your current Tasks in the list--------------------";
 
     while (!read.eof()) {
@@ -75,19 +68,19 @@ void readData() {
     read.close();
 }
 
-
 int searchData() {
     system("cls");
-     cout<<"\t\t\t***********************************************************************"<<endl;
-	cout<<"\t\t\t                       WELCOME TO Your ToDo List                       "<<endl;
-    cout<<"\t\t\t***********************************************************************"<<endl<<endl<<endl;
+    cout << "\t\t\t***********************************************************************" << endl;
+    cout << "\t\t\t                       WELCOME TO Your ToDo List                       " << endl;
+    cout << "\t\t\t***********************************************************************" << endl << endl << endl;
+
     int id;
     cout << "\n\tEnter task id: ";
     cin >> id;
-    todo todo;
-    ifstream read;
-    read.open("todo.txt");
- 
+
+    Todo todo;
+    ifstream read("todo.txt");
+
     while (!read.eof()) {
         read >> todo.id;
         read.ignore();
@@ -97,123 +90,128 @@ int searchData() {
             return id;
         }
     }
+    return -1; // Return -1 if task not found
 }
-
 
 void deleteData() {
     system("cls");
-    cout<<"\t\t\t***********************************************************************"<<endl;
-	cout<<"\t\t\t                       WELCOME TO Your ToDo List                       "<<endl;
-    cout<<"\t\t\t***********************************************************************"<<endl<<endl<<endl;
+    cout << "\t\t\t***********************************************************************" << endl;
+    cout << "\t\t\t                       WELCOME TO Your ToDo List                       " << endl;
+    cout << "\t\t\t***********************************************************************" << endl << endl << endl;
+
     int id = searchData();
-    cout << "\n\tDo you want to delete this task (y/n) : ";
+    if (id == -1) {
+        cout << "\n\tTask not found.";
+        return;
+    }
+
+    cout << "\n\tDo you want to delete this task (y/n): ";
     char choice;
     cin >> choice;
+
     if (choice == 'y') {
-        todo todo;
-        ofstream tempFile;
-        tempFile.open("temp.txt");
-        ifstream read;
-        read.open("todo.txt");
+        Todo todo;
+        ofstream tempFile("temp.txt");
+        ifstream read("todo.txt");
 
         while (!read.eof()) {
             read >> todo.id;
             read.ignore();
             getline(read, todo.task);
             if (todo.id != id) {
-                tempFile << "\n" << todo.id;
-                tempFile << "\n" << todo.task;
+                tempFile << "\n" << todo.id << "\n" << todo.task;
             }
         }
         read.close();
         tempFile.close();
         remove("todo.txt");
         rename("temp.txt", "todo.txt");
-        cout << "\n\tTask deleted successfuly";
+        cout << "\n\tTask deleted successfully";
     }
     else {
         cout << "\n\tRecord not deleted";
     }
 }
-
 
 void updateData() {
     system("cls");
-    cout<<"\t\t\t***********************************************************************"<<endl;
-	cout<<"\t\t\t                       WELCOME TO Your ToDo List                       "<<endl;
-    cout<<"\t\t\t***********************************************************************"<<endl<<endl<<endl;
+    cout << "\t\t\t***********************************************************************" << endl;
+    cout << "\t\t\t                       WELCOME TO Your ToDo List                       " << endl;
+    cout << "\t\t\t***********************************************************************" << endl << endl << endl;
+
     int id = searchData();
-    cout << "\n\tYou want to update this task (y/n) : ";
+    if (id == -1) {
+        cout << "\n\tTask not found.";
+        return;
+    }
+
+    cout << "\n\tYou want to update this task (y/n): ";
     char choice;
     cin >> choice;
+
     if (choice == 'y') {
-        todo newData;
-        cout << "\n\tEnter todo task : ";
-        cin.get();
+        Todo newData;
+        cout << "\n\tEnter todo task: ";
+        cin.ignore();
         getline(cin, newData.task);
-        todo todo;
-        ofstream tempFile;
-        tempFile.open("temp.txt");
-        ifstream read;
-        read.open("todo.txt");
+
+        Todo todo;
+        ofstream tempFile("temp.txt");
+        ifstream read("todo.txt");
 
         while (!read.eof()) {
             read >> todo.id;
             read.ignore();
             getline(read, todo.task);
             if (todo.id != id) {
-                tempFile << "\n" << todo.id;
-                tempFile << "\n" << todo.task;
+                tempFile << "\n" << todo.id << "\n" << todo.task;
             }
             else {
-                tempFile << "\n"<< todo.id;
-                tempFile << "\n"<< newData.task;
+                tempFile << "\n" << todo.id << "\n" << newData.task;
             }
         }
         read.close();
         tempFile.close();
         remove("todo.txt");
         rename("temp.txt", "todo.txt");
-        cout << "\n\tTask updated successfuly";
+        cout << "\n\tTask updated successfully";
     }
     else {
-        cout << "\n\tRecord not deleted";
+        cout << "\n\tRecord not updated";
     }
 }
-int main()
-{
-    system("cls");
 
+int main() {
+    system("cls");
     system("title todoapp @copyassignment");
-    cout<<"\t\t\t***********************************************************************"<<endl;
-    cout<<"\t\t\t*                                                                     *"<<endl;
-	cout<<"\t\t\t*                      WELCOME TO Your ToDo List                      *"<<endl;
-	cout<<"\t\t\t*                                                                     *"<<endl;
-    cout<<"\t\t\t***********************************************************************"<<endl<<endl<<endl<<endl;
-    ifstream read;
-    read.open("id.txt");
+    cout << "\t\t\t***********************************************************************" << endl;
+    cout << "\t\t\t*                                                                     *" << endl;
+    cout << "\t\t\t*                      WELCOME TO Your ToDo List                      *" << endl;
+    cout << "\t\t\t*                                                                     *" << endl;
+    cout << "\t\t\t***********************************************************************" << endl << endl << endl << endl;
+
+    ifstream read("id.txt");
     if (!read.fail()) {
         read >> ID;
-    }
-    else {
-        ID = 0;
     }
     read.close();
 
     while (true) {
-        cout<<endl<<endl;
-        cout << "\n\t1.Add student data";
-        cout << "\n\t2.See student data";
-        cout << "\n\t3.Search student data";
-        cout << "\n\t4.Delete student data";
-        cout << "\n\t5.Update student data";
+        cout << endl << endl;
+        cout << "\n\t1. Add task";
+        cout << "\n\t2. See tasks";
+        cout << "\n\t3. Search task";
+        cout << "\n\t4. Delete task";
+        cout << "\n\t5. Update task";
+        cout << "\n\t6. Exit";
 
         int choice;
-        cout << "\n\tEnter choice : ";
+        cout << "\n\tEnter choice: ";
         cin >> choice;
+
         switch (choice) {
         case 1:
-            addtodo();
+            addTodo();
             break;
         case 2:
             readData();
@@ -227,7 +225,13 @@ int main()
         case 5:
             updateData();
             break;
+        case 6:
+            exit(0);
+            break;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
         }
     }
 
+    return 0;
 }
